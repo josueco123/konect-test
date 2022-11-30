@@ -1,28 +1,32 @@
-<?php
-?><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-	<title>Welcome to CodeIgniter</title>
-</head>
-<body>
+<div class="container bg-secondary" style="--bs-bg-opacity: .15;">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
 
-<div id="container">
-<div class="table-responsive">
-          <table id="legalizaciones" class="table" cellspacing="0" width="100%">
-            <thead>
-              <tr>
-                <th width="5%">ID viat</th>
-                <th width="20%">Nombres</th>                
-              </tr>
+			<div class="card  shadow-lg p-3 mb-5 bg-body rounded" style="margin-top: 15px;">
+				
+				<div class="card-body">
+					<h3 class="card-title text-center">Lista de Productos</h3>
+          <button type="button" class="btn btn-primary btn-sm float-right">Agregar Producto</button>
+					<hr>
+					<div class="table-responsive">
+          <table class="table"  id="products">
+            <thead class="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Referencia</th> 
+              <th>Categoria</th>     
+              <th>Peso</th>              
+              <th>Stock</th>
+              <th>Precio</th>
+              <th>Acciones</th>
+            </tr>
             </thead>
-<?php foreach ($products as $product) { ?>
-    <tr>
-                <td><?= $product->id_producto ?></td>
-                <td><?= $product->nombre_producto ?></td>
-                </tr>
-    <?php } ?>
+           
+          </table>
+				  </div>
+				
+			</div>
+		
+		</div>  
+    </div>
 </div>
-
-</body>
-</html>
