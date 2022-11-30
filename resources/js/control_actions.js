@@ -17,14 +17,15 @@ $(document).ready(function () {
           }
         },
         { "defaultContent": true,render: function ( data, type, row ) {
-          return "<button type='button' class='btn btn-success btn-sm'>Vender </button> "+
-           "<button type='button' class='btn btn-primary btn-sm'>Editar</button> "+
+          return "<button type='button' class='btn btn-success btn-sm evt-vender'>Vender </button> "+
+           "<button type='button' class='btn btn-primary btn-sm evt-editar'>Editar</button> "+
           "<button type='button' class='btn btn-danger btn-sm evt-eliminar'>Eliminar</button></td>"
          
         }
       }
     ]
   });
+
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
       confirmButton: 'btn btn-primary',
@@ -33,12 +34,20 @@ $(document).ready(function () {
     buttonsStyling: false
   })
 
-    $("body").on("click", ".evt-guardar-producto", function () {
-        $(this).addClass("disabled");
-        $(this).text("Guardando...");
+  $("body").on("click", ".evt-agregar", function () {  
+    
+    const urlResponse = window.location.href + "/add_products"         
+    $(location).attr("href", urlResponse);
 
-        const urlGuardar = $(this).attr("data-url-guardar");
-        const urlRedirect = $(this).attr("data-url-redirect");
+  });
+
+    $("body").on("click", ".evt-guardar-producto", function () {
+        const $boton = $(this)
+        $boton.addClass("disabled");
+        $boton.text("Guardando...");
+
+        const urlGuardar = $boton.attr("data-url-guardar");
+        const urlRedirect = $boton.attr("data-url-redirect");
 
           $.ajax({
             url: urlGuardar,
@@ -71,19 +80,28 @@ $(document).ready(function () {
                 'Ups, sucedió un error, por favor intenta más tarde o contacta al administrador',
                 'error'
               );
-              $(this).removeClass("disabled");
-              $(this).text("Guardar");
+              $boton.removeClass("disabled");
+              $boton.text("Guardar");
             });
         
     });
 
-    $("body").on("click", ".evt-actualizar-producto", function () {
-      $(this).addClass("disabled");
-      $(this).text("Actualizando...");
+    $("body").on("click", ".evt-editar", function () {  
 
-      const urlActualizar = $(this).attr("data-url-actualizar");
-      const idproducto =  $(this).attr("data-id");
-      const urlRedirect = $(this).attr("data-url-redirect");
+      const data = table.row( $(this).parents('tr') ).data();      
+      const urlResponse = window.location.href + "/edit_product/" + data["id_producto"];            
+      $(location).attr("href", urlResponse);
+  
+    });
+
+    $("body").on("click", ".evt-actualizar-producto", function () {
+      const $boton = $(this)
+      $boton .addClass("disabled");
+      $boton .text("Actualizando...");
+
+      const urlActualizar = $boton.attr("data-url-actualizar");
+      const idproducto =  $boton.attr("data-id");
+      const urlRedirect = $boton.attr("data-url-redirect");
       
         $.ajax({
           url: urlActualizar + '/' + idproducto,
@@ -91,7 +109,7 @@ $(document).ready(function () {
           data: $('#form-producto').serialize(),
           type: "post",
         })
-          .done(function (resp) {
+          .done(function (resp) {            
             if (resp.status_code == 200) {
               swalWithBootstrapButtons.fire(
                   '!Éxito!',
@@ -116,8 +134,8 @@ $(document).ready(function () {
               'Ups, sucedió un error, por favor intenta más tarde o contacta al administrador',
               'error'
             );
-            $(this).removeClass("disabled");
-            $(this).text("Actualizar");
+            $boton.removeClass("disabled");
+            $boton.text("Actualizar");
           });
       
     });
@@ -174,4 +192,73 @@ $(document).ready(function () {
         }
       });
     });
+
+    $("body").on('click', '.evt-vender', function () {
+
+      const data = table.row( $(this).parents('tr') ).data();
+
+      const precio = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0}).format(data['precio_producto']);
+      $('.name_product').text('Producto: '+ data['nombre_producto']);
+      $('.referencia_producto').text('Referencia: '+ data['referencia_producto']);
+      $('.stock').text('Stock: '+ data['stock_producto']);
+      $('.precio_producto').text('Precio: '+ precio); 
+      $('input[name="id_producto"]').val(data['id_producto']);          
+      $('#venderModal').modal('show');
+    });
+
+    $("body").on("click", ".evt-guardar-venta", function () {
+
+      const $boton = $(this)
+      $boton.addClass("disabled");
+      $boton.text("Guardando...");
+      $('#venderModal').modal('hide');
+
+      const urlGuardar = $(this).attr("data-url-guardar");
+     
+        $.ajax({
+          url: urlGuardar,
+          dataType: "json",
+          data: $('#form-venta').serialize(),
+          type: "post",
+        })
+          .done(function (resp) {
+            $boton.removeClass("disabled");
+            $boton.text("Guardar");
+            if (resp.status_code == 200) {
+              swalWithBootstrapButtons.fire(
+                  '!Éxito!',
+                  resp.mensaje,
+                'success'
+              )
+              table.ajax.url(window.location.href +'/getproducts').load();          
+            } else {
+              swalWithBootstrapButtons.fire(
+                'Error',
+                resp.mensaje,
+                'error'
+              );                
+            }
+            
+          })
+          .fail(function () {
+            swalWithBootstrapButtons.fire(
+              'Error',
+              'Ups, sucedió un error, por favor intenta más tarde o contacta al administrador',
+              'error'
+            );
+            $boton.removeClass("disabled");
+            $boton.text("Guardar");
+          });
+      
+      });
+
+      $("body").on("click", ".item-1", function () {
+        $(this).addClass("active");
+        $('.item-2').removeClass("active");
+      }); 
+
+      $("body").on("click", ".item-2", function () {
+        $(this).addClass("active");
+        $('.item-1').removeClass("active");
+      }); 
 });

@@ -62,4 +62,46 @@ class Product_Model extends CI_model
 		$this->db->update('kc_productos'); 
 		return $this->db->affected_rows();
     }
+
+    public function updateStock ($id_producto,$stock)
+    {
+        $dateTime = date('Y-m-d h:i:s', time());
+        $this->db->set('stock_producto', $stock); 
+		$this->db->set('updated_at', $dateTime); 
+		$this->db->where('id_producto', $id_producto);
+		$this->db->update('kc_productos'); 
+		return $this->db->affected_rows();
+    }
+
+    public function getHighStock()
+	{
+		$sql = "SELECT *
+                FROM kc_productos
+                WHERE
+                    stock_producto = (SELECT 
+                            MAX(stock_producto)
+                        FROM
+                            kc_productos WHERE deleted_at IS NULL)
+                            AND deleted_at IS NULL;";
+
+        $query = $this->db->query($sql);
+
+        return $query->result(); 
+	}
+
+    public function getProductHighSell ()
+    {
+        $sql = "SELECT SUM(cantidad_venta) AS cantidad, kc_productos.nombre_producto AS nombre 
+                    FROM kc_ventas 
+                    INNER JOIN kc_productos ON kc_productos.id_producto =kc_ventas.id_producto 
+                    WHERE kc_productos.deleted_at IS NULL 
+                    GROUP BY kc_ventas.id_producto 
+                    ORDER BY cantidad DESC 
+                    LIMIT 1;";
+
+        $query = $this->db->query($sql);
+        
+        return $query->result();
+    }
+    
 }
