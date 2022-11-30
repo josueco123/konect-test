@@ -14,8 +14,9 @@ Tecnologías
 
 - Clonar el repositorio en la carpeta C:/xampp/htdocs/konect-test on en la carpeta del servidor de su prefetencia
 ```
-https://github.com/josueco123/konect-test.git
+git clone https://github.com/josueco123/konect-test.git
 ```
+
 - Generar o Importar una la base de datos
 - Configurar base de datos en archivo database.php
 
